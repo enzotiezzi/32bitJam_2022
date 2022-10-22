@@ -46,21 +46,30 @@ public:
 	void ExecuteAttack(UAttack* uCurrentAttack);
 
 	UFUNCTION(BlueprintCallable)
-	void ResetCombat();
+		void ResetCombat();
 
 	UFUNCTION(BlueprintCallable)
-	void ContinueCombo();
+		void ContinueCombo();
 
 protected:
 	/*
 	*
-	* 
+	*
 	*  ATTACK
-	* 
+	*
 	*/
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
-	TArray<TSubclassOf<UAttack>> ComboAttack;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
+		TArray<TSubclassOf<UAttack>> ComboAttack;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
+		TSubclassOf<UAttack> LaserBeamAttack;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
+		TSubclassOf<UAttack> RollingAttack;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
+		TSubclassOf<UAttack> UltimateAttack;
 
 	UAttack* CurrentAttack;
 
@@ -71,7 +80,23 @@ protected:
 	int ComboCounter = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	bool bIsRootMotionAnimation = false;
+		bool bIsRootMotionAnimation = false;
 
 	bool bCanMove = true;
+
+	/*
+	*
+	*
+	* ENDURANCE SYSTEM
+	*
+	*/
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Edurance System")
+		float MaxEndurance = 100;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Edurance System")
+		float CurrentEndurance = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Edurance System")
+		bool bCanRecoverEndurance;
 };

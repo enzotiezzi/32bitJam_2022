@@ -40,4 +40,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		bool bIsRootMotion;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		float Damage;
 };

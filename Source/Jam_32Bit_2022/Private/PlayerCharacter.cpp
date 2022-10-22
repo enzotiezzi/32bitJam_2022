@@ -39,7 +39,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -97,6 +96,18 @@ void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 {
     if (uCurrentAttack)
     {
+        if (uCurrentAttack->bUseEndurance && uCurrentAttack->EnduranceCost - CurrentEndurance >= 0)
+            CurrentEndurance -= uCurrentAttack->EnduranceCost;
+        else
+            return;
+
+        if (uCurrentAttack->bRecoverEndurance)
+        {
+            CurrentEndurance += uCurrentAttack->EnduranceToRecover;
+
+            CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+        }
+
         CurrentAttack = uCurrentAttack;
 
         ComboCounter++;
