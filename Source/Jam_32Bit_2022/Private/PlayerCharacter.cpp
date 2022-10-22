@@ -28,17 +28,13 @@ APlayerCharacter::APlayerCharacter()
 
     CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
 
-    //Setting class variables of the spring arm
-
-    SpringArmComp->bUsePawnControlRotation = true;
-
     //Setting class variables of the Character movement component
 
-    GetCharacterMovement()->bOrientRotationToMovement = true;
+    GetCharacterMovement()->bOrientRotationToMovement = false;
 
-    GetCharacterMovement()->bUseControllerDesiredRotation = true;
+    GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
-    GetCharacterMovement()->bIgnoreBaseRotation = true;
+    GetCharacterMovement()->bIgnoreBaseRotation = false;
 
 }
 
