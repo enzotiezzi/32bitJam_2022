@@ -9,33 +9,23 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
-    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
-
-    // Instantiating your class Components
 
     SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 
     CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 
-    //Set the location and rotation of the Character Mesh Transform
-
     GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
-
-    // Attaching your class Components to the default character's Skeletal Mesh Component.
 
     SpringArmComp->SetupAttachment(GetMesh());
 
     CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
-
-    //Setting class variables of the Character movement component
 
     GetCharacterMovement()->bOrientRotationToMovement = false;
 
     GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
     GetCharacterMovement()->bIgnoreBaseRotation = false;
-
 }
 
 // Called when the game starts or when spawned
@@ -56,10 +46,13 @@ void APlayerCharacter::Tick(float DeltaTime)
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+
     PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
     PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
     PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
+    PlayerInputComponent->BindAction("ComboAttack", IE_Pressed, this, &APlayerCharacter::AttackCombo);
 }
 
 void APlayerCharacter::MoveForward(float AxisValue)
@@ -92,3 +85,51 @@ void APlayerCharacter::MoveRight(float AxisValue)
     }
 }
 
+void APlayerCharacter::AttackCombo()
+{
+    if (!bIsAttacking)
+        ExecuteAttack(ComboAttack[0].GetDefaultObject());
+    else
+        bContinueCombo = true;
+}
+
+void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
+{
+    if (uCurrentAttack)
+    {
+        CurrentAttack = uCurrentAttack;
+
+        ComboCounter++;
+
+        bIsAttacking = true;
+
+        bIsRootMotionAnimation = CurrentAttack->bIsRootMotion;
+
+        PlayAnimMontage(CurrentAttack->AttackAnimMontage);
+    }
+}
+
+void APlayerCharacter::ContinueCombo()
+{
+    if (bContinueCombo)
+    {
+        bContinueCombo = false;
+
+        ExecuteAttack(ComboAttack[ComboCounter].GetDefaultObject());
+    }
+}
+
+void APlayerCharacter::ResetCombat()
+{
+    ComboCounter = 0;
+
+    bIsAttacking = false;
+
+    bCanMove = true;
+
+    bContinueCombo = false;
+
+    bIsRootMotionAnimation = false;
+
+    CurrentAttack = nullptr;
+}

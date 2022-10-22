@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <Attack.h>
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
@@ -40,4 +41,37 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void AttackCombo();
+
+	void ExecuteAttack(UAttack* uCurrentAttack);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetCombat();
+
+	UFUNCTION(BlueprintCallable)
+	void ContinueCombo();
+
+protected:
+	/*
+	*
+	* 
+	*  ATTACK
+	* 
+	*/
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
+	TArray<TSubclassOf<UAttack>> ComboAttack;
+
+	UAttack* CurrentAttack;
+
+	bool bContinueCombo = false;
+
+	bool bIsAttacking = false;
+
+	int ComboCounter = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bIsRootMotionAnimation = false;
+
+	bool bCanMove = true;
 };
