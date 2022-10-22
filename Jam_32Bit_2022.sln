@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31314.256
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28315.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{233774A8-CC9D-3FA9-86D1-90573E92B704}"
 EndProject
@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Visualizers", "Visualizers", "{1CCEC849-CC72-4C59-8C36-2F7C38706D4C}"
 	ProjectSection(SolutionItems) = preProject
 		C:\UE_5.0\Engine\Extras\VisualStudioDebugging\Unreal.natvis = C:\UE_5.0\Engine\Extras\VisualStudioDebugging\Unreal.natvis
+
 	EndProjectSection
 EndProject
 Global
@@ -44,6 +45,7 @@ Global
 		{CFDC0382-481A-39BA-AAEC-3E63824D5990}.Development|Win64.Build.0 = Development|x64
 		{CFDC0382-481A-39BA-AAEC-3E63824D5990}.Shipping|Win64.ActiveCfg = Shipping|x64
 		{CFDC0382-481A-39BA-AAEC-3E63824D5990}.Shipping|Win64.Build.0 = Shipping|x64
+
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,5 +53,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3AAE1CB7-0B51-3856-82CF-EE419E841FD6} = {233774A8-CC9D-3FA9-86D1-90573E92B704}
 		{CFDC0382-481A-39BA-AAEC-3E63824D5990} = {DE1F8B53-6C02-3C13-9101-A7C8D96F3FF6}
+
 	EndGlobalSection
 EndGlobal
