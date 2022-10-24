@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include <Destructible.h>
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -174,14 +175,19 @@ void APlayerCharacter::EnableTailCollider()
 
 void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-    if (CurrentAttack->bRecoverEndurance)
+    if (IDestructible* Destructible = Cast<IDestructible>(OtherActor))
     {
-        CurrentEndurance += CurrentAttack->EnduranceToRecover;
+        RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-        CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+        if (CurrentAttack->bRecoverEndurance)
+        {
+            CurrentEndurance += CurrentAttack->EnduranceToRecover;
+
+            CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+        }
+
+        Destructible->ReceiveDamange(CurrentAttack->Damage);
     }
 }
