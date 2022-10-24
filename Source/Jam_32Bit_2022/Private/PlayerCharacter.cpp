@@ -12,20 +12,35 @@ APlayerCharacter::APlayerCharacter()
     PrimaryActorTick.bCanEverTick = true;
 
     SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-
     CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+    RightHandCollider = CreateDefaultSubobject<USphereComponent>(TEXT("RightHandCollider"));
+    LeftHandCollider = CreateDefaultSubobject<USphereComponent>(TEXT("LeftHandCollider"));
+    TailCollider = CreateDefaultSubobject<USphereComponent>(TEXT("TailCollider"));
 
-    GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
+    GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, 90.0f, 0.0f)));
 
     SpringArmComp->SetupAttachment(GetMesh());
 
     CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
+    RightHandCollider->SetupAttachment(GetMesh(), "claw_rightSocket");
+    LeftHandCollider->SetupAttachment(GetMesh(), "claw_leftSocket");
+    TailCollider->SetupAttachment(GetMesh(), "tail4Socket");
 
     GetCharacterMovement()->bOrientRotationToMovement = false;
-
     GetCharacterMovement()->bUseControllerDesiredRotation = false;
-
     GetCharacterMovement()->bIgnoreBaseRotation = false;
+
+    RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+    RightHandCollider->SetCollisionProfileName("OverlapAllDynamic");
+    LeftHandCollider->SetCollisionProfileName("OverlapAllDynamic");
+    TailCollider->SetCollisionProfileName("OverlapAllDynamic");
+
+    RightHandCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnHitComponentBeginOverlap);
+    LeftHandCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnHitComponentBeginOverlap);
+    TailCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnHitComponentBeginOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -98,25 +113,22 @@ void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
     {
         if (uCurrentAttack->bUseEndurance && uCurrentAttack->EnduranceCost - CurrentEndurance >= 0)
             CurrentEndurance -= uCurrentAttack->EnduranceCost;
-        else
-            return;
 
-        if (uCurrentAttack->bRecoverEndurance)
+        if(CurrentEndurance >= 0) 
         {
-            CurrentEndurance += uCurrentAttack->EnduranceToRecover;
+            if (!uCurrentAttack->bUseEndurance)
+            {
+                CurrentAttack = uCurrentAttack;
 
-            CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+                ComboCounter++;
+
+                bIsAttacking = true;
+
+                bIsRootMotionAnimation = CurrentAttack->bIsRootMotion;
+
+                PlayAnimMontage(CurrentAttack->AttackAnimMontage);
+            }
         }
-
-        CurrentAttack = uCurrentAttack;
-
-        ComboCounter++;
-
-        bIsAttacking = true;
-
-        bIsRootMotionAnimation = CurrentAttack->bIsRootMotion;
-
-        PlayAnimMontage(CurrentAttack->AttackAnimMontage);
     }
 }
 
@@ -143,4 +155,33 @@ void APlayerCharacter::ResetCombat()
     bIsRootMotionAnimation = false;
 
     CurrentAttack = nullptr;
+}
+
+void APlayerCharacter::EnableRightHandCollider() 
+{
+    RightHandCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void APlayerCharacter::EnableLeftHandCollider()
+{
+    LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void APlayerCharacter::EnableTailCollider()
+{
+    TailCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+    if (CurrentAttack->bRecoverEndurance)
+    {
+        CurrentEndurance += CurrentAttack->EnduranceToRecover;
+
+        CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+    }
 }

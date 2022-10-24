@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <Components/SphereComponent.h>
 #include <Attack.h>
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -71,18 +72,44 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
 		TSubclassOf<UAttack> UltimateAttack;
 
-	UAttack* CurrentAttack;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UAttack* CurrentAttack;
 
-	bool bContinueCombo = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bContinueCombo = false;
 
-	bool bIsAttacking = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bIsAttacking = false;
 
-	int ComboCounter = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int ComboCounter = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bIsRootMotionAnimation = false;
 
-	bool bCanMove = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bCanMove = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Attack System")
+		USphereComponent* RightHandCollider;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Attack System")
+		USphereComponent* LeftHandCollider;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Attack System")
+		USphereComponent* TailCollider;
+
+	UFUNCTION(BlueprintCallable)
+		void EnableRightHandCollider();
+
+	UFUNCTION(BlueprintCallable)
+		void EnableLeftHandCollider();
+
+	UFUNCTION(BlueprintCallable)
+		void EnableTailCollider();
+
+	UFUNCTION()
+		void OnHitComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	/*
 	*
