@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Destructible.h>
+#include <Building.h>
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -178,7 +179,7 @@ void APlayerCharacter::EnableTailCollider()
 
 void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IDestructible* Destructible = Cast<IDestructible>(OtherActor))
+	if (ABuilding* Building = Cast<ABuilding>(OtherActor))
 	{
 		RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -186,11 +187,11 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 
 		if (CurrentAttack->bRecoverEndurance)
 		{
-			CurrentEndurance += CurrentAttack->EnduranceToRecover;
+			CurrentEndurance += Building->EnduranceToRecover;
 
 			CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
 		}
 
-		Destructible->ReceiveDamange(CurrentAttack->Damage);
+		Building->ReceiveDamange(CurrentAttack->Damage);
 	}
 }

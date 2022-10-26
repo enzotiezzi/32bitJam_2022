@@ -27,6 +27,9 @@ public:
 
 	float ReceiveDamange(float IncomingDamage) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float EnduranceToRecover;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		float MaxHealth = 100;
