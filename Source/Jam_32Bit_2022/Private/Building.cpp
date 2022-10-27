@@ -17,7 +17,7 @@ ABuilding::ABuilding()
 
 	StaticMeshComponent->SetupAttachment(BoxComponent);
 
-	BoxComponent->SetCollisionProfileName("BlockAll");
+	BoxComponent->SetCollisionProfileName("OverlapAllDynamic");
 }
 
 // Called when the game starts or when spawned

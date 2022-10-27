@@ -3,3 +3,12 @@
 
 #include "Jam_32Bit_2022GameModeBase.h"
 
+void AJam_32Bit_2022GameModeBase::BeginPlay()
+{
+	if (DialogSystemRef)
+	{
+		DialogSystem = DialogSystemRef.GetDefaultObject();
+		DialogSystem->World = GetWorld();
+		DialogSystem->SetupWidget();
+	}
+}

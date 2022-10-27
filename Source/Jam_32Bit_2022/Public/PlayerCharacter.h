@@ -52,6 +52,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ContinueCombo();
 
+	UFUNCTION()
+		void Interact();
+
+	UFUNCTION()
+		void StopDialog();
+
+	UFUNCTION()
+		void StartDialog();
+
 protected:
 	/*
 	*
@@ -126,4 +135,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Edurance System")
 		bool bCanRecoverEndurance;
+
+	/*
+	*
+	* DIALOG SYSTEM
+	* 
+	*/
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Dialog System")
+		bool bIsInDialog = false;
 };

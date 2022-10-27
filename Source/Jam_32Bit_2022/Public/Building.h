@@ -8,7 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Building.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class JAM_32BIT_2022_API ABuilding : public AActor, public IDestructible
 {
 	GENERATED_BODY()

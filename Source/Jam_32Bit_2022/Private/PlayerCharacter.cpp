@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Destructible.h>
 #include <Building.h>
+#include <Jam_32Bit_2022/Jam_32Bit_2022GameModeBase.h>
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -32,10 +34,6 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bIgnoreBaseRotation = false;
 
-	RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	RightHandCollider->SetCollisionProfileName("OverlapAllDynamic");
 	LeftHandCollider->SetCollisionProfileName("OverlapAllDynamic");
 	TailCollider->SetCollisionProfileName("OverlapAllDynamic");
@@ -43,13 +41,16 @@ APlayerCharacter::APlayerCharacter()
 	RightHandCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnHitComponentBeginOverlap);
 	LeftHandCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnHitComponentBeginOverlap);
 	TailCollider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnHitComponentBeginOverlap);
+
+	RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -69,11 +70,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("ComboAttack", IE_Pressed, this, &APlayerCharacter::AttackCombo);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 }
 
 void APlayerCharacter::MoveForward(float AxisValue)
 {
-	if ((Controller != nullptr) && (AxisValue != 0.0f))
+	if ((Controller != nullptr) && (AxisValue != 0.0f) && bCanMove)
 	{
 		// Find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -87,7 +89,7 @@ void APlayerCharacter::MoveForward(float AxisValue)
 
 void APlayerCharacter::MoveRight(float AxisValue)
 {
-	if ((Controller != nullptr) && (AxisValue != 0.0f))
+	if ((Controller != nullptr) && (AxisValue != 0.0f) && bCanMove)
 	{
 		// Find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -113,16 +115,17 @@ void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 {
 	if (uCurrentAttack)
 	{
-		bool canAttack = true;
+		bool CanAttack = true;
 
 		if (uCurrentAttack->bUseEndurance)
 			if (CurrentEndurance - uCurrentAttack->EnduranceCost >= 0)
 				CurrentEndurance -= uCurrentAttack->EnduranceCost;
 			else
-				canAttack = false;
+				CanAttack = false;
 
 
-		if (canAttack) {
+		if (CanAttack) 
+		{
 			CurrentAttack = uCurrentAttack;
 
 			ComboCounter++;
@@ -179,6 +182,8 @@ void APlayerCharacter::EnableTailCollider()
 
 void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, "Collide");
+
 	if (ABuilding* Building = Cast<ABuilding>(OtherActor))
 	{
 		RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -193,5 +198,28 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 		}
 
 		Building->ReceiveDamange(CurrentAttack->Damage);
+	}
+}
+
+void APlayerCharacter::StopDialog()
+{
+	bIsInDialog = false;
+	bCanMove = true;
+}
+
+void APlayerCharacter::StartDialog()
+{
+	bIsInDialog = true;
+	bCanMove = false;
+}
+
+void APlayerCharacter::Interact()
+{
+	if (bIsInDialog)
+	{
+		if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+		{
+			MyGameMode->DialogSystem->PlayNextDialog();
+		}
 	}
 }
