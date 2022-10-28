@@ -190,14 +190,16 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 		LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		if (CurrentAttack->bRecoverEndurance)
-		{
-			CurrentEndurance += Building->EnduranceToRecover;
+		if (CurrentAttack) {
 
-			CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+			if (CurrentAttack->bRecoverEndurance)
+			{
+				CurrentEndurance += Building->EnduranceToRecover;
+
+				CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+			}
+			Building->ReceiveDamange(CurrentAttack->Damage);
 		}
-
-		Building->ReceiveDamange(CurrentAttack->Damage);
 	}
 }
 

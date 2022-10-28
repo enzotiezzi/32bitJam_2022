@@ -37,5 +37,18 @@ void ABuilding::Tick(float DeltaTime)
 
 float ABuilding::ReceiveDamange(float IncomingDamange) 
 {
-	return 0;
+
+	if (IncomingDamange > 0  && CurrentHealth > 0) {
+		CurrentHealth -= IncomingDamange;
+
+		if (CurrentHealth <= 0)
+		{
+			CurrentHealth = 0;
+
+			Destroy();
+
+		}
+	}
+
+	return CurrentHealth;
 }
