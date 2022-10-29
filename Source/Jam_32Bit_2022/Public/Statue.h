@@ -8,7 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Statue.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class JAM_32BIT_2022_API AStatue : public ABuilding
 {
 	GENERATED_BODY()

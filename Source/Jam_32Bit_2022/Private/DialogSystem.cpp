@@ -87,6 +87,9 @@ void UDialogSystem::PlayNextDialog()
 		if (Widget->IsInViewport())
 			Widget->RemoveFromViewport();
 
+		if (CurrentSequencePlayer)
+			CurrentSequencePlayer->Stop();
+
 		CurrentDialog->OnDialogFinished(CurrentDialogItem);
 	}
 }
