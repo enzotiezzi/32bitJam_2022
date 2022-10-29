@@ -10,6 +10,11 @@ void UDestructionSystem::Start()
 {
 	SetupWidget();
 
+	AActor* LevelSettingsActor = UGameplayStatics::GetActorOfClass(World, ALevelSettings::StaticClass());
+
+	if (LevelSettingsActor)
+		LevelSettings = Cast<ALevelSettings>(LevelSettingsActor);
+
 	TArray<AActor*> Buildings;
 
 	UGameplayStatics::GetAllActorsOfClass(World, ABuilding::StaticClass(), Buildings);
@@ -17,6 +22,8 @@ void UDestructionSystem::Start()
 	InitialBuildingCount = Buildings.Num();
 
 	UpdateBuildingPercentage();
+
+	CurrentTimer = LevelSettings->TimeToGameOver * 60;
 }
 
 void UDestructionSystem::SetupWidget()
@@ -29,6 +36,7 @@ void UDestructionSystem::SetupWidget()
 		{
 			TextPercentage = Cast<UTextBlock>(Widget->GetWidgetFromName("DestructionText"));
 			EnduranceBar = Cast<UProgressBar>(Widget->GetWidgetFromName("EnduranceBar"));
+			Timer = Cast<UTextBlock>(Widget->GetWidgetFromName("Timer"));
 		}
 	}
 }
@@ -52,7 +60,7 @@ void UDestructionSystem::UpdateBuildingPercentage()
 
 	TextPercentage->SetText(FText::FromString(FString::SanitizeFloat(Percentage) + "%"));
 
-	if (Percentage >= 80)
+	if (LevelSettings->PercentageToActivateStatue >= 80)
 	{
 		TArray<AActor*> Statues;
 
@@ -71,4 +79,30 @@ void UDestructionSystem::UpdateBuildingPercentage()
 void UDestructionSystem::UpdateEnduranceBar(float EndurancePercentage)
 {
 	EnduranceBar->SetPercent(EndurancePercentage);
+}
+
+void UDestructionSystem::StartTimer()
+{
+	World->GetTimerManager().ClearTimer(TimerHandle);
+
+	World->GetTimerManager().SetTimer(TimerHandle, this, &UDestructionSystem::TimerTick, TimerDecrement, true);
+}
+
+void UDestructionSystem::TimerTick()
+{
+	if (CurrentTimer > 0)
+	{
+		CurrentTimer -= TimerDecrement;
+
+		int Minutes = CurrentTimer / 60;
+		int Seconds = CurrentTimer % 60;
+
+		FString TimeLeft = FString::FromInt(Minutes) + ":" + FString::FromInt(Seconds);
+
+		Timer->SetText(FText::FromString(TimeLeft));
+	}
+	else 
+	{
+		// TODO: GAME OVER
+	}
 }

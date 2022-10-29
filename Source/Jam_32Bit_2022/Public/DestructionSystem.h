@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <LevelSettings.h>
 #include <Components/ProgressBar.h>
 #include <BaseUserWidget.h>
 #include <Components/TextBlock.h>
@@ -29,6 +30,8 @@ public:
 
 	void UpdateEnduranceBar(float EndurancePercentage);
 
+	void StartTimer();
+
 protected:
 	void SetupWidget();
 
@@ -42,8 +45,25 @@ protected:
 		UTextBlock* TextPercentage;
 
 	UPROPERTY(BlueprintReadWrite)
+		UTextBlock* Timer;
+
+	UPROPERTY(BlueprintReadWrite)
 		UProgressBar* EnduranceBar;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int InitialBuildingCount;
+
+	UPROPERTY(BlueprintReadWrite)
+		ALevelSettings* LevelSettings;
+
+	UPROPERTY(BlueprintReadWrite)
+		int CurrentTimer;
+
+	UPROPERTY(BlueprintReadWrite)
+		FTimerHandle TimerHandle;
+
+	void TimerTick();
+
+	UPROPERTY(BlueprintReadWrite)
+		int TimerDecrement = 1;
 };
