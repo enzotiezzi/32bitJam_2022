@@ -140,8 +140,10 @@ void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 			bIsRootMotionAnimation = CurrentAttack->bIsRootMotion;
 
 			PlayAnimMontage(CurrentAttack->AttackAnimMontage);
-		}
 
+			if(uCurrentAttack->AttackSound)
+				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), uCurrentAttack->AttackSound, GetActorLocation());
+		}
 	}
 }
 

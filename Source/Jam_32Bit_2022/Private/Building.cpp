@@ -49,10 +49,18 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 
 			Destroy();
 
+			if (DestructionHitSound)
+				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DestructionHitSound, GetActorLocation());
+
 			if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 			{
 				MyGameMode->DestructionSystem->UpdateBuildingPercentage();
 			}
+		}
+		else 
+		{
+			if (BasicHitSound)
+				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), BasicHitSound, GetActorLocation());
 		}
 	}
 

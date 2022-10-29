@@ -4,6 +4,7 @@
 #include "DestructionSystem.h"
 #include <Kismet/GameplayStatics.h>
 #include <Building.h>
+#include <Statue.h>
 
 void UDestructionSystem::Start()
 {
@@ -43,7 +44,22 @@ void UDestructionSystem::UpdateBuildingPercentage()
 
 	UGameplayStatics::GetAllActorsOfClass(World, ABuilding::StaticClass(), Buildings);
 
-	float Percentage = (Buildings.Num() / InitialBuildingCount) * 100;
+	float Percentage = 100 - ((Buildings.Num() / InitialBuildingCount) * 100);
 
 	TextPercentage->SetText(FText::FromString(FString::SanitizeFloat(Percentage) + "%"));
+
+	if (Percentage >= 80)
+	{
+		TArray<AActor*> Statues;
+
+		UGameplayStatics::GetAllActorsOfClass(World, AStatue::StaticClass(), Statues);
+
+		for (AActor* StatueActor : Statues)
+		{
+			if (AStatue* Statue = Cast<AStatue>(StatueActor))
+			{
+				Statue->ActivateStatue();
+			}
+		}
+	}
 }

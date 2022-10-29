@@ -43,4 +43,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		float Damage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		USoundBase* AttackSound;
 };

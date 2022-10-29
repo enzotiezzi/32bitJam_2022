@@ -42,4 +42,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UBoxComponent* BoxComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+		USoundBase* BasicHitSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+		USoundBase* DestructionHitSound;
 };
