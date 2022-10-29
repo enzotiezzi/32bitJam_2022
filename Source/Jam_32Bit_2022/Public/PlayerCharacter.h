@@ -44,7 +44,9 @@ public:
 
 	void AttackCombo();
 
-	void ExecuteAttack(UAttack* uCurrentAttack);
+	bool ExecuteAttack(UAttack* uCurrentAttack);
+
+	void RollAttack();
 
 	UFUNCTION(BlueprintCallable)
 		void ResetCombat();
@@ -77,6 +79,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
 		TSubclassOf<UAttack> RollingAttack;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
+		float RollingSpeed = 600;
+
+	bool bIsRolling = false;
+
+	FTimerHandle RollAttackTimerHandle;
+
+	void RollAttackTick();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
 		TSubclassOf<UAttack> UltimateAttack;

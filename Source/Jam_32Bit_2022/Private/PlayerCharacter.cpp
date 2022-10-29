@@ -51,11 +51,6 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
-	{
-		MyGameMode->DestructionSystem->ShowWidget();
-	}
 }
 
 // Called every frame
@@ -75,7 +70,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("ComboAttack", IE_Pressed, this, &APlayerCharacter::AttackCombo);
-
+	PlayerInputComponent->BindAction("RollAttack", IE_Pressed, this, &APlayerCharacter::RollAttack);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 }
 
@@ -117,7 +112,7 @@ void APlayerCharacter::AttackCombo()
 		bContinueCombo = true;
 }
 
-void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
+bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 {
 	if (uCurrentAttack)
 	{
@@ -148,7 +143,11 @@ void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 			if(uCurrentAttack->AttackSound)
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), uCurrentAttack->AttackSound, GetActorLocation());
 		}
+
+		return CanAttack;
 	}
+
+	return false;
 }
 
 void APlayerCharacter::ContinueCombo()
@@ -161,11 +160,41 @@ void APlayerCharacter::ContinueCombo()
 	}
 }
 
+void APlayerCharacter::RollAttack()
+{
+	if (!bIsRolling)
+	{
+		bool CanAttack = ExecuteAttack(RollingAttack.GetDefaultObject());
+
+		if (CanAttack)
+		{
+			bIsAttacking = true;
+			bIsRolling = true;
+
+			GetWorld()->GetTimerManager().SetTimer(RollAttackTimerHandle, this, &APlayerCharacter::RollAttackTick, GetWorld()->GetDeltaSeconds(), true);
+		}
+	}
+	else 
+	{
+		if(RollAttackTimerHandle.IsValid())
+			GetWorld()->GetTimerManager().ClearTimer(RollAttackTimerHandle);
+
+		ResetCombat();
+	}
+}
+
+void APlayerCharacter::RollAttackTick()
+{
+	AddMovementInput(GetActorForwardVector(), RollingSpeed);
+}
+
 void APlayerCharacter::ResetCombat()
 {
 	ComboCounter = 0;
 
 	bIsAttacking = false;
+
+	bIsRolling = false;
 
 	bCanMove = true;
 
