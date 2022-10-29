@@ -30,7 +30,7 @@ APlayerCharacter::APlayerCharacter()
 	LeftHandCollider->SetupAttachment(GetMesh(), "claw_leftSocket");
 	TailCollider->SetupAttachment(GetMesh(), "tail4Socket");
 
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bIgnoreBaseRotation = false;
 
