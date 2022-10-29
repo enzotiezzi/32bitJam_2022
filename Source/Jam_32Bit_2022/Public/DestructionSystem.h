@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <Components/ProgressBar.h>
 #include <BaseUserWidget.h>
 #include <Components/TextBlock.h>
 #include "CoreMinimal.h"
@@ -22,10 +23,11 @@ public:
 
 	void Start();
 
-
 	void ShowWidget();
 
 	void UpdateBuildingPercentage();
+
+	void UpdateEnduranceBar(float EndurancePercentage);
 
 protected:
 	void SetupWidget();
@@ -39,7 +41,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UTextBlock* TextPercentage;
 
+	UPROPERTY(BlueprintReadWrite)
+		UProgressBar* EnduranceBar;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int InitialBuildingCount;
-
 };

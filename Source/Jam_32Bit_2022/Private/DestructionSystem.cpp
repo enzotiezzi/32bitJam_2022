@@ -28,6 +28,7 @@ void UDestructionSystem::SetupWidget()
 		if (Widget)
 		{
 			TextPercentage = Cast<UTextBlock>(Widget->GetWidgetFromName("DestructionText"));
+			EnduranceBar = Cast<UProgressBar>(Widget->GetWidgetFromName("EnduranceBar"));
 		}
 	}
 }
@@ -65,4 +66,9 @@ void UDestructionSystem::UpdateBuildingPercentage()
 			}
 		}
 	}
+}
+
+void UDestructionSystem::UpdateEnduranceBar(float EndurancePercentage)
+{
+	EnduranceBar->SetPercent(EndurancePercentage);
 }

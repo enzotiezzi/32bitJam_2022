@@ -136,7 +136,14 @@ bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 		if (uCurrentAttack->bUseEndurance)
 		{
 			if (CurrentEndurance - uCurrentAttack->EnduranceCost >= 0)
+			{
 				CurrentEndurance -= uCurrentAttack->EnduranceCost;
+
+				if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+				{
+					MyGameMode->DestructionSystem->UpdateEnduranceBar(CurrentEndurance / MaxEndurance);
+				}
+			}
 			else
 				CanAttack = false;
 		}
@@ -239,8 +246,6 @@ void APlayerCharacter::EnableTailCollider()
 
 void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, "Collide");
-
 	if (ABuilding* Building = Cast<ABuilding>(OtherActor))
 	{
 		RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -254,6 +259,11 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 				CurrentEndurance += Building->EnduranceToRecover;
 
 				CurrentEndurance = FMath::Clamp(CurrentEndurance, 0, MaxEndurance);
+
+				if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+				{
+					MyGameMode->DestructionSystem->UpdateEnduranceBar(CurrentEndurance/MaxEndurance);
+				}
 			}
 			Building->ReceiveDamange(CurrentAttack->Damage);
 		}
