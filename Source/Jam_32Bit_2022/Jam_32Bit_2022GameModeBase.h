@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <DestructionSystem.h>
 #include <DialogSystem.h>
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
@@ -21,7 +22,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Dialog System")
 		UDialogSystem* DialogSystem;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Destruction System")
+		UDestructionSystem* DestructionSystem;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Dialog System")
 		TSubclassOf<UDialogSystem> DialogSystemRef;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Destruction System")
+		TSubclassOf<UDestructionSystem> DestructionSystemRef;
 };

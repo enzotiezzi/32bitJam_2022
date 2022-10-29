@@ -11,4 +11,11 @@ void AJam_32Bit_2022GameModeBase::BeginPlay()
 		DialogSystem->World = GetWorld();
 		DialogSystem->SetupWidget();
 	}
+
+	if (DestructionSystemRef)
+	{
+		DestructionSystem = DestructionSystemRef.GetDefaultObject();
+		DestructionSystem->World = GetWorld();
+		DestructionSystem->Start();
+	}
 }

@@ -3,6 +3,8 @@
 
 #include "Building.h"
 #include <Components/BoxComponent.h>
+#include <Kismet/GameplayStatics.h>
+#include <Jam_32Bit_2022/Jam_32Bit_2022GameModeBase.h>
 
 // Sets default values
 ABuilding::ABuilding()
@@ -37,8 +39,8 @@ void ABuilding::Tick(float DeltaTime)
 
 float ABuilding::ReceiveDamange(float IncomingDamange) 
 {
-
-	if (IncomingDamange > 0  && CurrentHealth > 0) {
+	if (IncomingDamange > 0  && CurrentHealth > 0) 
+	{
 		CurrentHealth -= IncomingDamange;
 
 		if (CurrentHealth <= 0)
@@ -47,6 +49,10 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 
 			Destroy();
 
+			if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+			{
+				MyGameMode->DestructionSystem->UpdateBuildingPercentage();
+			}
 		}
 	}
 
