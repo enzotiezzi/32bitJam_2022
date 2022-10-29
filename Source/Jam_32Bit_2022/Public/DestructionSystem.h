@@ -41,4 +41,5 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int InitialBuildingCount;
+
 };

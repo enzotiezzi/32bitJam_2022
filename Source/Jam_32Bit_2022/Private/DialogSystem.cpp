@@ -38,6 +38,24 @@ void UDialogSystem::PlayDialogItem(UDialogItem* DialogItem)
 	LeadingImage->Brush.SetResourceObject(DialogItem->LeadingImage);
 	TrailingImage->Brush.SetResourceObject(DialogItem->TrailingImage);
 	DialogText->SetText(FText::FromString(DialogItem->TextLine));
+
+	if (CurrentSequencePlayer)
+		CurrentSequencePlayer->Stop();
+
+	if (DialogItem->Sequence)
+	{
+		ALevelSequenceActor* LevelSequenceActor;
+
+		FMovieSceneSequencePlaybackSettings MovieSceneSequencePlaybackSettings;
+		MovieSceneSequencePlaybackSettings.bPauseAtEnd = true;
+		MovieSceneSequencePlaybackSettings.bHideHud = true;
+		MovieSceneSequencePlaybackSettings.bHidePlayer = DialogItem->HidePlayerOnSequence;
+
+		CurrentSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(World, DialogItem->Sequence, MovieSceneSequencePlaybackSettings, LevelSequenceActor);
+	
+		if (CurrentSequencePlayer)
+			CurrentSequencePlayer->Play();
+	}
 }
 
 void UDialogSystem::SetupWidget()

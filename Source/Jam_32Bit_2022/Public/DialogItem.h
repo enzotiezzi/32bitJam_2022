@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sequence")
 		class ULevelSequence* Sequence;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sequence")
+		bool HidePlayerOnSequence;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Thumbnail")
 		UTexture2D* LeadingImage;
 

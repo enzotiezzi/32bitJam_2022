@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <LevelSequencePlayer.h>
 #include <Components/TextBlock.h>
 #include <Components/Image.h>
 #include <BaseUserWidget.h>
@@ -53,4 +54,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite) 
 		UTextBlock* DialogText;
+
+	UPROPERTY(BlueprintReadWrite)
+		ULevelSequencePlayer* CurrentSequencePlayer;
 };
