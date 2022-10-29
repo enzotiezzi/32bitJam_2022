@@ -50,6 +50,7 @@ void UDialogSystem::PlayDialogItem(UDialogItem* DialogItem)
 		MovieSceneSequencePlaybackSettings.bPauseAtEnd = true;
 		MovieSceneSequencePlaybackSettings.bHideHud = true;
 		MovieSceneSequencePlaybackSettings.bHidePlayer = DialogItem->HidePlayerOnSequence;
+		MovieSceneSequencePlaybackSettings.bDisableMovementInput = true;
 
 		CurrentSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(World, DialogItem->Sequence, MovieSceneSequencePlaybackSettings, LevelSequenceActor);
 	
