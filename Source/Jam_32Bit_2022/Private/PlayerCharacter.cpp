@@ -75,6 +75,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("ComboAttack", IE_Pressed, this, &APlayerCharacter::AttackCombo);
+
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 }
 
@@ -123,11 +124,12 @@ void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 		bool CanAttack = true;
 
 		if (uCurrentAttack->bUseEndurance)
+		{
 			if (CurrentEndurance - uCurrentAttack->EnduranceCost >= 0)
 				CurrentEndurance -= uCurrentAttack->EnduranceCost;
 			else
 				CanAttack = false;
-
+		}
 
 		if (CanAttack) 
 		{
@@ -138,6 +140,8 @@ void APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 			bIsAttacking = true;
 
 			bIsRootMotionAnimation = CurrentAttack->bIsRootMotion;
+
+			GetCharacterMovement()->AddImpulse(GetActorForwardVector() * uCurrentAttack->Impulse, true);
 
 			PlayAnimMontage(CurrentAttack->AttackAnimMontage);
 
@@ -197,8 +201,8 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 		LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		if (CurrentAttack) {
-
+		if (CurrentAttack) 
+		{
 			if (CurrentAttack->bRecoverEndurance)
 			{
 				CurrentEndurance += Building->EnduranceToRecover;

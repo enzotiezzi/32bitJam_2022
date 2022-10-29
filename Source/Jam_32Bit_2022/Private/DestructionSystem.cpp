@@ -34,8 +34,11 @@ void UDestructionSystem::SetupWidget()
 
 void UDestructionSystem::ShowWidget()
 {
-	if (!Widget->IsInViewport())
-		Widget->AddToViewport();
+	if (Widget)
+	{
+		if (!Widget->IsInViewport())
+			Widget->AddToViewport();
+	}
 }
 
 void UDestructionSystem::UpdateBuildingPercentage()

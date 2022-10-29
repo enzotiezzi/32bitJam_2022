@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <PaperFlipbookComponent.h>
 #include <Components/BoxComponent.h>
 #include <Destructible.h>
 #include "CoreMinimal.h"
@@ -48,4 +49,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
 		USoundBase* DestructionHitSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+		UPaperFlipbookComponent* Explosion;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		float TimeToDestroy = 1;
 };

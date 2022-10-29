@@ -11,6 +11,8 @@ void ADialogTriggerBox::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 		{
+			SetActorEnableCollision(false);
+
 			MyGameMode->DialogSystem->StartDialog(DialogRef.GetDefaultObject());
 		}
 	}

@@ -14,6 +14,7 @@ ABuilding::ABuilding()
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	Explosion = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Explosion"));
 
 	SetRootComponent(BoxComponent);
 
@@ -28,6 +29,8 @@ void ABuilding::BeginPlay()
 	Super::BeginPlay();
 	
 	CurrentHealth = MaxHealth;
+
+	Explosion->SetVisibility(false);
 }
 
 // Called every frame
@@ -47,7 +50,13 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 		{
 			CurrentHealth = 0;
 
-			Destroy();
+			Explosion->SetVisibility(true);
+
+			FTimerHandle DestroyTimer;
+			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, [this]()
+				{
+					Destroy();
+				}, TimeToDestroy, false);
 
 			if (DestructionHitSound)
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DestructionHitSound, GetActorLocation());

@@ -8,7 +8,7 @@ public class Jam_32Bit_2022 : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "SlateCore", "LevelSequence", "MovieScene" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "SlateCore", "LevelSequence", "MovieScene", "Paper2D" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
