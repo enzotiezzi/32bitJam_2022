@@ -83,9 +83,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
 		float RollingSpeed = 600;
 
-	bool bIsRolling = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack System")
+		float RollingRotationSpeed = 1;
 
-	FTimerHandle RollAttackTimerHandle;
+	UPROPERTY(BlueprintReadWrite)
+		float CurrentYawRotation = 0;
+
+	UPROPERTY(BlueprintReadWrite)
+		float InitialYawRotation = 0;
+
+	UPROPERTY(BlueprintReadWrite)
+		bool bIsRolling = false;
+
+	UPROPERTY(BlueprintReadWrite)
+		FTimerHandle RollAttackTimerHandle;
 
 	void RollAttackTick();
 
