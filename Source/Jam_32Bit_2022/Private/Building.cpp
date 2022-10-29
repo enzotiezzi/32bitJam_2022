@@ -19,6 +19,7 @@ ABuilding::ABuilding()
 	SetRootComponent(BoxComponent);
 
 	StaticMeshComponent->SetupAttachment(BoxComponent);
+	Explosion->SetupAttachment(BoxComponent);
 
 	BoxComponent->SetCollisionProfileName("OverlapAllDynamic");
 }
@@ -42,7 +43,7 @@ void ABuilding::Tick(float DeltaTime)
 
 float ABuilding::ReceiveDamange(float IncomingDamange) 
 {
-	if (IncomingDamange > 0  && CurrentHealth > 0) 
+	if (IncomingDamange > 0 && CurrentHealth > 0) 
 	{
 		CurrentHealth -= IncomingDamange;
 
@@ -50,6 +51,7 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 		{
 			CurrentHealth = 0;
 
+			StaticMeshComponent->SetVisibility(false);
 			Explosion->SetVisibility(true);
 
 			FTimerHandle DestroyTimer;
