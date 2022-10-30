@@ -214,7 +214,7 @@ void APlayerCharacter::RollAttack()
 
 void APlayerCharacter::RollAttackTick()
 {
-	AddMovementInput(GetActorForwardVector(), RollingSpeed);
+	GetCharacterMovement()->AddImpulse(GetActorForwardVector() * RollingSpeed, true);
 }
 
 void APlayerCharacter::ResetCombat()
