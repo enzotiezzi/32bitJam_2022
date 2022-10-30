@@ -21,6 +21,7 @@ APlayerCharacter::APlayerCharacter()
 	RightHandCollider = CreateDefaultSubobject<USphereComponent>(TEXT("RightHandCollider"));
 	LeftHandCollider = CreateDefaultSubobject<USphereComponent>(TEXT("LeftHandCollider"));
 	TailCollider = CreateDefaultSubobject<USphereComponent>(TEXT("TailCollider"));
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, 90.0f, 0.0f)));
 
@@ -30,6 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	RightHandCollider->SetupAttachment(GetMesh(), "claw_rightSocket");
 	LeftHandCollider->SetupAttachment(GetMesh(), "claw_leftSocket");
 	TailCollider->SetupAttachment(GetMesh(), "tail4Socket");
+	StaticMeshComponent->SetupAttachment(GetMesh(), "MouthSocket");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
@@ -46,6 +48,10 @@ APlayerCharacter::APlayerCharacter()
 	RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticMeshComponent->SetVisibility(false);
+	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnHitComponentBeginOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -72,6 +78,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("ComboAttack", IE_Pressed, this, &APlayerCharacter::AttackCombo);
 	PlayerInputComponent->BindAction("RollAttack", IE_Pressed, this, &APlayerCharacter::RollAttack);
+	PlayerInputComponent->BindAction("BeamAttack", IE_Pressed, this, &APlayerCharacter::BeamAttack);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 	PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &APlayerCharacter::PauseGame);
 }
@@ -142,7 +149,8 @@ bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 		{
 			if (CurrentEndurance - uCurrentAttack->EnduranceCost >= 0)
 			{
-				CurrentEndurance -= uCurrentAttack->EnduranceCost;
+				if(!uCurrentAttack->bUseEnduranceOverTime)
+					CurrentEndurance -= uCurrentAttack->EnduranceCost;
 
 				if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 				{
@@ -195,18 +203,43 @@ void APlayerCharacter::RollAttack()
 
 		if (CanAttack)
 		{
-			bIsAttacking = true;
 			bIsRolling = true;
 
 			InitialYawRotation = GetActorRotation().Yaw;
 
 			GetWorld()->GetTimerManager().SetTimer(RollAttackTimerHandle, this, &APlayerCharacter::RollAttackTick, GetWorld()->GetDeltaSeconds(), true);
+			GetWorld()->GetTimerManager().SetTimer(EnduranceTimerHandle, this, &APlayerCharacter::DecreaseEnduranceTick, .1, true);
 		}
 	}
 	else 
 	{
 		if(RollAttackTimerHandle.IsValid())
 			GetWorld()->GetTimerManager().ClearTimer(RollAttackTimerHandle);
+
+		if (EnduranceTimerHandle.IsValid())
+			GetWorld()->GetTimerManager().ClearTimer(EnduranceTimerHandle);
+
+		ResetCombat();
+	}
+}
+
+void APlayerCharacter::BeamAttack()
+{
+	if (!bIsAttacking)
+	{
+		bool CanAttack = ExecuteAttack(LaserBeamAttack.GetDefaultObject());
+
+		if (CanAttack)
+		{
+			bIsRolling = true;
+
+			InitialYawRotation = GetActorRotation().Yaw;
+		}
+	}
+	else
+	{
+		if (EnduranceTimerHandle.IsValid())
+			GetWorld()->GetTimerManager().ClearTimer(EnduranceTimerHandle);
 
 		ResetCombat();
 	}
@@ -231,10 +264,16 @@ void APlayerCharacter::ResetCombat()
 
 	bIsRootMotionAnimation = false;
 
+	if(CurrentAttack)
+		StopAnimMontage(CurrentAttack->AttackAnimMontage);
+
 	CurrentAttack = nullptr;
 
 	if (AttackAudioComponent)
 		AttackAudioComponent->Stop();
+
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticMeshComponent->SetVisibility(false);
 }
 
 void APlayerCharacter::EnableRightHandCollider()
@@ -259,6 +298,7 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 		RightHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		LeftHandCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		if (CurrentAttack) 
 		{
@@ -306,5 +346,35 @@ void APlayerCharacter::PauseGame()
 	if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 	{
 		MyGameMode->ShowPauseMenu();
+	}
+}
+
+void APlayerCharacter::EnableBeam() 
+{
+	GetWorld()->GetTimerManager().SetTimer(EnduranceTimerHandle, this, &APlayerCharacter::DecreaseEnduranceTick, .1, true);
+
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	StaticMeshComponent->SetVisibility(true);
+}
+
+void APlayerCharacter::DecreaseEnduranceTick()
+{
+	if (CurrentAttack)
+	{
+		if (CurrentEndurance - CurrentAttack->EnduranceCost >= 0)
+		{
+			CurrentEndurance -= CurrentAttack->EnduranceCost;
+
+			if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+			{
+				MyGameMode->DestructionSystem->UpdateEnduranceBar(CurrentEndurance / MaxEndurance);
+			}
+		}
+		else
+		{
+			GetWorld()->GetTimerManager().ClearTimer(EnduranceTimerHandle);
+
+			ResetCombat();
+		}
 	}
 }

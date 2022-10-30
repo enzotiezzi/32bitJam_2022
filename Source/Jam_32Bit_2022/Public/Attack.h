@@ -37,6 +37,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		int EnduranceToRecover;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		bool bUseEnduranceOverTime;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		bool bIsRootMotion;

@@ -32,9 +32,12 @@ void AStatue::Tick(float DeltaTime)
 
 void AStatue::ActivateStatue()
 {
-	bIsBarrierUp = false;
+	if (Barrier)
+	{
+		bIsBarrierUp = false;
 
-	Barrier->DestroyComponent();
+		Barrier->DestroyComponent();
+	}
 }
 
 float AStatue::ReceiveDamange(float IncomingDamage)

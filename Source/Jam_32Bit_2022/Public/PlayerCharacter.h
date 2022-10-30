@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UCameraComponent* CameraComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UStaticMeshComponent* StaticMeshComponent;
+
 	//Called for forwards/backward input
 	void MoveForward(float InputAxis);
 
@@ -48,11 +51,16 @@ public:
 
 	void RollAttack();
 
+	void BeamAttack();
+
 	UFUNCTION(BlueprintCallable)
 		void ResetCombat();
 
 	UFUNCTION(BlueprintCallable)
 		void ContinueCombo();
+
+	UFUNCTION(BlueprintCallable)
+		void EnableBeam();
 
 	UFUNCTION()
 		void Interact();
@@ -147,6 +155,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 		UAudioComponent* AttackAudioComponent;
+
+	UPROPERTY(BlueprintReadWrite)
+		FTimerHandle EnduranceTimerHandle;
+
+	void DecreaseEnduranceTick();
 
 	/*
 	*

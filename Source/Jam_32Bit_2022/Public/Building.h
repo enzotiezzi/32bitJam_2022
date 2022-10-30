@@ -28,6 +28,8 @@ public:
 
 	float ReceiveDamange(float IncomingDamage) override;
 
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float EnduranceToRecover;
 
@@ -55,4 +57,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		float TimeToDestroy = 1;
+
+	UPROPERTY(BlueprintReadWrite)
+		FTimerHandle DestroyTimer;
 };

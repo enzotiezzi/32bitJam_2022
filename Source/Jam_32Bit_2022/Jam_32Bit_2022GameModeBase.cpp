@@ -264,6 +264,8 @@ void AJam_32Bit_2022GameModeBase::ShowWinWidget(FName NextLevelName)
 	{
 		CurrentNextLevelName = NextLevelName;
 
+		DestructionSystem->UpdateBuildingPercentage();
+
 		// TODO: SET TIME LEFT AND 
 		int Minutes = DestructionSystem->CurrentTimer / 60;
 		int Seconds = DestructionSystem->CurrentTimer % 60;

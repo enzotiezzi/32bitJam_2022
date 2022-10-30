@@ -54,15 +54,17 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 			StaticMeshComponent->SetVisibility(false);
 			Explosion->SetVisibility(true);
 
-			FTimerHandle DestroyTimer;
 			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, [this]()
 				{
-					Destroy();
-
 					if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 					{
 						MyGameMode->DestructionSystem->UpdateBuildingPercentage();
 					}
+
+					GetWorld()->GetTimerManager().ClearTimer(DestroyTimer);
+
+					Destroy();
+
 				}, TimeToDestroy, false);
 
 			if (DestructionHitSound)
@@ -76,4 +78,9 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 	}
 
 	return CurrentHealth;
+}
+
+void ABuilding::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(DestroyTimer);
 }
