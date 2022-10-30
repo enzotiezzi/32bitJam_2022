@@ -53,6 +53,7 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 
 			StaticMeshComponent->SetVisibility(false);
 			Explosion->SetVisibility(true);
+			SetActorEnableCollision(false);
 
 			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, [this]()
 				{

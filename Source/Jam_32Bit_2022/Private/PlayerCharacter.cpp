@@ -373,6 +373,7 @@ void APlayerCharacter::DecreaseEnduranceTick()
 		else
 		{
 			GetWorld()->GetTimerManager().ClearTimer(EnduranceTimerHandle);
+			GetWorld()->GetTimerManager().ClearTimer(RollAttackTimerHandle);
 
 			ResetCombat();
 		}
