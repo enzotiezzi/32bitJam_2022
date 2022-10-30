@@ -75,4 +75,6 @@ protected:
 	void SetupGameOverWidget();
 
 	void SetupMainMenuWidget();
+
+	void ShowMainMenu();
 };

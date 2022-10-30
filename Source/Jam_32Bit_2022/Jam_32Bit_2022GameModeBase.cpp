@@ -10,8 +10,7 @@ void AJam_32Bit_2022GameModeBase::BeginPlay()
 
 	if (GetWorld()->GetFName() == "MenuLevel")
 	{
-		if (!MainMenuWidget->IsInViewport())
-			MainMenuWidget->AddToViewport();
+		ShowMainMenu();
 	}
 	else
 	{
@@ -55,7 +54,6 @@ void AJam_32Bit_2022GameModeBase::OnMenuButtonClick()
 {
 
 }
-
 
 void AJam_32Bit_2022GameModeBase::OnRetryButtonClick()
 {
@@ -110,6 +108,18 @@ void AJam_32Bit_2022GameModeBase::SetupMainMenuWidget()
 
 void AJam_32Bit_2022GameModeBase::OnStartButtonClick()
 {
+	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		if (MainMenuWidget->IsInViewport())
+			MainMenuWidget->RemoveFromViewport();
+
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+		PlayerController->SetShowMouseCursor(false);
+
+		PlayerController->SetInputMode(FInputModeGameOnly());
+	}
+
 	UGameplayStatics::OpenLevel(GetWorld(), "Level_1");
 }
 
@@ -118,5 +128,24 @@ void AJam_32Bit_2022GameModeBase::OnQuitButtonClick()
 	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
 	{
 		UKismetSystemLibrary::QuitGame(GetWorld(), PlayerController, EQuitPreference::Quit, true);
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::ShowMainMenu()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		if (!MainMenuWidget->IsInViewport())
+			MainMenuWidget->AddToViewport();
+
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		PlayerController->SetShowMouseCursor(true);
+
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(MainMenuStartButton->TakeWidget());
+
+		PlayerController->SetInputMode(InputMode);
 	}
 }
