@@ -57,15 +57,17 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 
 			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, [this]()
 				{
-					if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+					if (DestroyTimer.IsValid())
 					{
-						MyGameMode->DestructionSystem->UpdateBuildingPercentage();
+						if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+						{
+							MyGameMode->DestructionSystem->UpdateBuildingPercentage();
+						}
+
+						GetWorld()->GetTimerManager().ClearTimer(DestroyTimer);
+
+						Destroy();
 					}
-
-					GetWorld()->GetTimerManager().ClearTimer(DestroyTimer);
-
-					Destroy();
-
 				}, TimeToDestroy, false);
 
 			if (DestructionHitSound)

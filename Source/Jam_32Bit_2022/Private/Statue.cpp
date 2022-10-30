@@ -55,9 +55,12 @@ float AStatue::ReceiveDamange(float IncomingDamage)
 
 		if (CurrentHealth == 0)
 		{
-			// TODO: WIN UI
 			if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 			{
+				GetWorld()->GetTimerManager().ClearTimer(DestroyTimer);
+
+				Destroy();
+
 				MyGameMode->ShowWinWidget(NextLevelName);
 			}
 		}
