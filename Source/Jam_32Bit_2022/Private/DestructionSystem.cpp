@@ -24,6 +24,8 @@ void UDestructionSystem::Start()
 	UpdateBuildingPercentage();
 
 	CurrentTimer = LevelSettings->TimeToGameOver * 60;
+
+	StartTimer();
 }
 
 void UDestructionSystem::SetupWidget()

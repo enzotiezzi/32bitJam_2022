@@ -9,8 +9,8 @@ void ALevelSettings::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
-	{
-		MyGameMode->DestructionSystem->StartTimer();
-	}
+	//if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+	//{
+	//	MyGameMode->DestructionSystem->StartTimer();
+	//}
 }
