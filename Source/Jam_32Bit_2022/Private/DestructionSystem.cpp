@@ -58,8 +58,8 @@ void UDestructionSystem::UpdateBuildingPercentage()
 
 	UGameplayStatics::GetAllActorsOfClass(World, ABuilding::StaticClass(), Buildings);
 
-	float Percentage = 100 - ((Buildings.Num() / InitialBuildingCount) * 100);
-
+	float Percentage = FMath::RoundToInt(100 - ((static_cast<float>(Buildings.Num()) / static_cast<float>(InitialBuildingCount)) * 100));
+	
 	TextPercentage->SetText(FText::FromString(FString::SanitizeFloat(Percentage) + "%"));
 
 	if (LevelSettings->PercentageToActivateStatue >= 80)

@@ -31,4 +31,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Destruction System")
 		TSubclassOf<UDestructionSystem> DestructionSystemRef;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game Over")
+		TSubclassOf<UUserWidget> GameOverWidgetRef;
 };

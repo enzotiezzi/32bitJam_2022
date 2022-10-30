@@ -58,15 +58,15 @@ float ABuilding::ReceiveDamange(float IncomingDamange)
 			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, [this]()
 				{
 					Destroy();
+
+					if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+					{
+						MyGameMode->DestructionSystem->UpdateBuildingPercentage();
+					}
 				}, TimeToDestroy, false);
 
 			if (DestructionHitSound)
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DestructionHitSound, GetActorLocation());
-
-			if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
-			{
-				MyGameMode->DestructionSystem->UpdateBuildingPercentage();
-			}
 		}
 		else 
 		{
