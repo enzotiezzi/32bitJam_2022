@@ -34,6 +34,11 @@ public:
 
 	void ShowPauseMenu();
 
+	UFUNCTION()
+		void GoToNextLevel();
+
+	void ShowWinWidget(FName NextLevelName);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Dialog System")
 		TSubclassOf<UDialogSystem> DialogSystemRef;
@@ -77,6 +82,24 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UButton* PauseMenuMainMenuButton;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Win UI")
+		TSubclassOf<UUserWidget> WinWidgetRef;
+
+	UPROPERTY(BlueprintReadWrite)
+		UUserWidget* WinWidget;
+
+	UPROPERTY(BlueprintReadWrite)
+		UTextBlock* TimeLeftText;
+
+	UPROPERTY(BlueprintReadWrite)
+		UTextBlock* DestructionText;
+
+	UPROPERTY(BlueprintReadWrite)
+		UButton* WinMenuRetryButton;
+
+	UPROPERTY(BlueprintReadWrite)
+		UButton* WinMenuNextButton;
+
 	UFUNCTION()
 		void OnMenuButtonClick();
 
@@ -99,4 +122,9 @@ protected:
 	void SetupPauseMenuWidget();
 
 	void ShowMainMenu();
+
+	void SetupWinWidget();
+
+	UPROPERTY(BlueprintReadWrite)
+		FName CurrentNextLevelName;
 };

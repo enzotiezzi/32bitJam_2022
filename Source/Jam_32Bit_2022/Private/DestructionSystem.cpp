@@ -61,11 +61,11 @@ void UDestructionSystem::UpdateBuildingPercentage()
 
 		UGameplayStatics::GetAllActorsOfClass(World, ABuilding::StaticClass(), Buildings);
 
-		float Percentage = FMath::RoundToInt(100 - ((static_cast<float>(Buildings.Num()) / static_cast<float>(InitialBuildingCount)) * 100));
+		CurrentDestructionPercentage = FMath::RoundToInt(100 - ((static_cast<float>(Buildings.Num()) / static_cast<float>(InitialBuildingCount)) * 100));
 
-		TextPercentage->SetText(FText::FromString(FString::SanitizeFloat(Percentage) + "%"));
+		TextPercentage->SetText(FText::FromString(FString::SanitizeFloat(CurrentDestructionPercentage) + "%"));
 
-		if (Percentage >= LevelSettings->PercentageToActivateStatue)
+		if (CurrentDestructionPercentage >= LevelSettings->PercentageToActivateStatue)
 		{
 			TArray<AActor*> Statues;
 

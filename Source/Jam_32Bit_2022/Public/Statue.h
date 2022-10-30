@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <Components/Button.h>
+#include <Components/TextBlock.h>
 #include <Building.h>
 #include <Components/BoxComponent.h>
 #include "CoreMinimal.h"
@@ -30,7 +32,7 @@ public:
 	void ActivateStatue();
 
 protected:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* Barrier;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
@@ -41,6 +43,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Next Level")
 		FName NextLevelName;
-
-	void GoToNextLevel();
 };

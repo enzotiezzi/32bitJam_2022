@@ -32,6 +32,12 @@ public:
 
 	void StartTimer();
 
+	UPROPERTY(BlueprintReadWrite)
+		int CurrentDestructionPercentage = 0;
+
+	UPROPERTY(BlueprintReadWrite)
+		int CurrentTimer;
+
 protected:
 	void SetupWidget();
 
@@ -55,9 +61,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 		ALevelSettings* LevelSettings;
-
-	UPROPERTY(BlueprintReadWrite)
-		int CurrentTimer;
 
 	UPROPERTY(BlueprintReadWrite)
 		FTimerHandle TimerHandle;

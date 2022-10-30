@@ -31,6 +31,7 @@ void AJam_32Bit_2022GameModeBase::BeginPlay()
 
 		SetupGameOverWidget();
 		SetupPauseMenuWidget();
+		SetupWinWidget();
 	}
 }
 
@@ -218,5 +219,71 @@ void AJam_32Bit_2022GameModeBase::ShowPauseMenu()
 
 			PlayerController->SetInputMode(InputMode);
 		}
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::SetupWinWidget()
+{
+	if (WinWidgetRef)
+	{
+		WinWidget = CreateWidget<UUserWidget>(GetWorld(), WinWidgetRef);
+
+		if (WinWidget)
+		{
+			TimeLeftText = Cast<UTextBlock>(WinWidget->GetWidgetFromName("TimeLeftText"));
+			DestructionText = Cast<UTextBlock>(WinWidget->GetWidgetFromName("DestructionText"));
+			WinMenuRetryButton = Cast<UButton>(WinWidget->GetWidgetFromName("RetryButton"));
+			WinMenuNextButton = Cast<UButton>(WinWidget->GetWidgetFromName("NextButton"));
+
+			WinMenuRetryButton->OnClicked.AddDynamic(this, &AJam_32Bit_2022GameModeBase::OnRetryButtonClick);
+			WinMenuNextButton->OnClicked.AddDynamic(this, &AJam_32Bit_2022GameModeBase::GoToNextLevel);
+		}
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::GoToNextLevel()
+{
+	if (!CurrentNextLevelName.IsNone())
+	{
+		if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+		{
+			UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+			PlayerController->SetShowMouseCursor(false);
+
+			PlayerController->SetInputMode(FInputModeGameOnly());
+		}
+
+		UGameplayStatics::OpenLevel(GetWorld(), CurrentNextLevelName);
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::ShowWinWidget(FName NextLevelName)
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		CurrentNextLevelName = NextLevelName;
+
+		// TODO: SET TIME LEFT AND 
+		int Minutes = DestructionSystem->CurrentTimer / 60;
+		int Seconds = DestructionSystem->CurrentTimer % 60;
+
+		FString TimeLeft = FString::FromInt(Minutes) + ":" + FString::FromInt(Seconds);
+
+		TimeLeftText->SetText(FText::FromString(TimeLeft));
+		DestructionText->SetText(FText::FromString(FString::SanitizeFloat(DestructionSystem->CurrentDestructionPercentage) + "%"));
+
+		if (!WinWidget->IsInViewport())
+			WinWidget->AddToViewport();
+		
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		PlayerController->SetShowMouseCursor(true);
+
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(WinMenuNextButton->TakeWidget());
+
+		PlayerController->SetInputMode(InputMode);
 	}
 }
