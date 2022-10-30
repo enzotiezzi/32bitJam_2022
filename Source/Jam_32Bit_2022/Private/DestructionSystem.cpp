@@ -5,6 +5,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Building.h>
 #include <Statue.h>
+#include <Jam_32Bit_2022/Jam_32Bit_2022GameModeBase.h>
 
 void UDestructionSystem::Start()
 {
@@ -54,25 +55,28 @@ void UDestructionSystem::ShowWidget()
 
 void UDestructionSystem::UpdateBuildingPercentage()
 {
-	TArray<AActor*> Buildings;
-
-	UGameplayStatics::GetAllActorsOfClass(World, ABuilding::StaticClass(), Buildings);
-
-	float Percentage = FMath::RoundToInt(100 - ((static_cast<float>(Buildings.Num()) / static_cast<float>(InitialBuildingCount)) * 100));
-	
-	TextPercentage->SetText(FText::FromString(FString::SanitizeFloat(Percentage) + "%"));
-
-	if (LevelSettings->PercentageToActivateStatue >= 80)
+	if (LevelSettings)
 	{
-		TArray<AActor*> Statues;
+		TArray<AActor*> Buildings;
 
-		UGameplayStatics::GetAllActorsOfClass(World, AStatue::StaticClass(), Statues);
+		UGameplayStatics::GetAllActorsOfClass(World, ABuilding::StaticClass(), Buildings);
 
-		for (AActor* StatueActor : Statues)
+		float Percentage = FMath::RoundToInt(100 - ((static_cast<float>(Buildings.Num()) / static_cast<float>(InitialBuildingCount)) * 100));
+
+		TextPercentage->SetText(FText::FromString(FString::SanitizeFloat(Percentage) + "%"));
+
+		if (Percentage >= LevelSettings->PercentageToActivateStatue)
 		{
-			if (AStatue* Statue = Cast<AStatue>(StatueActor))
+			TArray<AActor*> Statues;
+
+			UGameplayStatics::GetAllActorsOfClass(World, AStatue::StaticClass(), Statues);
+
+			for (AActor* StatueActor : Statues)
 			{
-				Statue->ActivateStatue();
+				if (AStatue* Statue = Cast<AStatue>(StatueActor))
+				{
+					Statue->ActivateStatue();
+				}
 			}
 		}
 	}
@@ -105,6 +109,11 @@ void UDestructionSystem::TimerTick()
 	}
 	else 
 	{
-		// TODO: GAME OVER
+		World->GetTimerManager().ClearTimer(TimerHandle);
+
+		if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(World)))
+		{
+			MyGameMode->ShowGameOver();
+		}
 	}
 }

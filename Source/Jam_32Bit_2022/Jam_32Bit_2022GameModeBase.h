@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <Components/Button.h>
 #include <DestructionSystem.h>
 #include <DialogSystem.h>
 #include "CoreMinimal.h"
@@ -25,6 +26,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Destruction System")
 		UDestructionSystem* DestructionSystem;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Game Over")
+		UUserWidget* GameOverWidget;
+
+	UFUNCTION()
+		void ShowGameOver();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Dialog System")
 		TSubclassOf<UDialogSystem> DialogSystemRef;
@@ -34,4 +41,19 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game Over")
 		TSubclassOf<UUserWidget> GameOverWidgetRef;
+
+	UPROPERTY(BlueprintReadWrite)
+		UButton* GameOverMenuButton;
+
+	UPROPERTY(BlueprintReadWrite)
+		UButton* GameOverRetryButton;
+
+
+	UFUNCTION()
+		void OnMenuButtonClick();
+
+	UFUNCTION()
+		void OnRetryButtonClick();
+
+	void SetupGameOverWidget();
 };

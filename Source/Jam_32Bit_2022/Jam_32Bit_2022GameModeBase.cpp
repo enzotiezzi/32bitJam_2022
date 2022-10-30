@@ -2,6 +2,7 @@
 
 
 #include "Jam_32Bit_2022GameModeBase.h"
+#include <Kismet/GameplayStatics.h>
 
 void AJam_32Bit_2022GameModeBase::BeginPlay()
 {
@@ -18,5 +19,64 @@ void AJam_32Bit_2022GameModeBase::BeginPlay()
 		DestructionSystem->World = GetWorld();
 		DestructionSystem->Start();
 		DestructionSystem->ShowWidget();
+	}
+
+	SetupGameOverWidget();
+}
+
+void AJam_32Bit_2022GameModeBase::SetupGameOverWidget()
+{
+	if (GameOverWidgetRef)
+	{
+		GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetRef);
+
+		if (GameOverWidget)
+		{
+			GameOverMenuButton = Cast<UButton>(GameOverWidget->GetWidgetFromName("MenuButton"));
+			GameOverRetryButton = Cast<UButton>(GameOverWidget->GetWidgetFromName("RetryButton"));
+
+			GameOverMenuButton->OnClicked.AddDynamic(this, &AJam_32Bit_2022GameModeBase::OnMenuButtonClick);
+			GameOverRetryButton->OnClicked.AddDynamic(this, &AJam_32Bit_2022GameModeBase::OnRetryButtonClick);
+		}
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::OnMenuButtonClick()
+{
+
+}
+
+
+void AJam_32Bit_2022GameModeBase::OnRetryButtonClick()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		GameOverWidget->RemoveFromViewport();
+
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+		PlayerController->SetShowMouseCursor(false);
+
+		PlayerController->SetInputMode(FInputModeGameOnly());
+
+		UGameplayStatics::OpenLevel(GetWorld(), FName(GetWorld()->GetName()));
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::ShowGameOver()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		GameOverWidget->AddToViewport();
+
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		PlayerController->SetShowMouseCursor(true);
+
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(GameOverWidget->GetWidgetFromName("RetryButton")->TakeWidget());
+
+		PlayerController->SetInputMode(InputMode);
 	}
 }
