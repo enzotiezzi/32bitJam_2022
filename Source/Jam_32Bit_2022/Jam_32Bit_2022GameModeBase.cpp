@@ -52,7 +52,19 @@ void AJam_32Bit_2022GameModeBase::SetupGameOverWidget()
 
 void AJam_32Bit_2022GameModeBase::OnMenuButtonClick()
 {
+	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		if (MainMenuWidget->IsInViewport())
+			MainMenuWidget->RemoveFromViewport();
 
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+		PlayerController->SetShowMouseCursor(false);
+
+		PlayerController->SetInputMode(FInputModeGameOnly());
+	}
+
+	UGameplayStatics::OpenLevel(GetWorld(), "MenuLevel");
 }
 
 void AJam_32Bit_2022GameModeBase::OnRetryButtonClick()
