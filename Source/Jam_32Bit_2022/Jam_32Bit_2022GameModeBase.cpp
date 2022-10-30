@@ -6,22 +6,29 @@
 
 void AJam_32Bit_2022GameModeBase::BeginPlay()
 {
-	if (DialogSystemRef)
+	if (GetWorld()->GetFName() == "MenuLevel")
 	{
-		DialogSystem = DialogSystemRef.GetDefaultObject();
-		DialogSystem->World = GetWorld();
-		DialogSystem->SetupWidget();
+		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Blue, "MenuLevel");
 	}
-
-	if (DestructionSystemRef)
+	else
 	{
-		DestructionSystem = DestructionSystemRef.GetDefaultObject();
-		DestructionSystem->World = GetWorld();
-		DestructionSystem->Start();
-		DestructionSystem->ShowWidget();
-	}
+		if (DialogSystemRef)
+		{
+			DialogSystem = DialogSystemRef.GetDefaultObject();
+			DialogSystem->World = GetWorld();
+			DialogSystem->SetupWidget();
+		}
 
-	SetupGameOverWidget();
+		if (DestructionSystemRef)
+		{
+			DestructionSystem = DestructionSystemRef.GetDefaultObject();
+			DestructionSystem->World = GetWorld();
+			DestructionSystem->Start();
+			DestructionSystem->ShowWidget();
+		}
+
+		SetupGameOverWidget();
+	}
 }
 
 void AJam_32Bit_2022GameModeBase::SetupGameOverWidget()

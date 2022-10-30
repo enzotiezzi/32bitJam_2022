@@ -36,5 +36,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
 		USoundBase* BarrierHitSound;
 
-	bool bIsBarrierUp = true;
+	UPROPERTY(BlueprintReadWrite)
+		bool bIsBarrierUp = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Next Level")
+		FName NextLevelName;
+
+	void GoToNextLevel();
 };

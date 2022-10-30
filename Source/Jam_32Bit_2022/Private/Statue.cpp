@@ -50,3 +50,20 @@ float AStatue::ReceiveDamange(float IncomingDamage)
 		return Super::ReceiveDamange(IncomingDamage);
 	}
 }
+
+void AStatue::GoToNextLevel()
+{
+	if (!NextLevelName.IsNone())
+	{
+		if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+		{
+			UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+			PlayerController->SetShowMouseCursor(false);
+
+			PlayerController->SetInputMode(FInputModeGameOnly());
+		}
+
+		UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
+	}
+}

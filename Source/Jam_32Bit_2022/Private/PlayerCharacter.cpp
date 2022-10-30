@@ -9,6 +9,7 @@
 #include <Building.h>
 #include <Jam_32Bit_2022/Jam_32Bit_2022GameModeBase.h>
 #include <Kismet/GameplayStatics.h>
+#include <Components/AudioComponent.h>
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -121,10 +122,13 @@ void APlayerCharacter::MoveRight(float AxisValue)
 
 void APlayerCharacter::AttackCombo()
 {
-	if (!bIsAttacking)
-		ExecuteAttack(ComboAttack[0].GetDefaultObject());
-	else
-		bContinueCombo = true;
+	if (bCanMove)
+	{
+		if (!bIsAttacking)
+			ExecuteAttack(ComboAttack[0].GetDefaultObject());
+		else
+			bContinueCombo = true;
+	}
 }
 
 bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
@@ -163,7 +167,7 @@ bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 			PlayAnimMontage(CurrentAttack->AttackAnimMontage);
 
 			if(uCurrentAttack->AttackSound)
-				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), uCurrentAttack->AttackSound, GetActorLocation());
+				AttackAudioComponent = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), uCurrentAttack->AttackSound, GetActorLocation());
 		}
 
 		return CanAttack;
@@ -227,6 +231,9 @@ void APlayerCharacter::ResetCombat()
 	bIsRootMotionAnimation = false;
 
 	CurrentAttack = nullptr;
+
+	if (AttackAudioComponent)
+		AttackAudioComponent->Stop();
 }
 
 void APlayerCharacter::EnableRightHandCollider()
