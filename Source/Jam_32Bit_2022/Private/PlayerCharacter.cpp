@@ -73,6 +73,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("ComboAttack", IE_Pressed, this, &APlayerCharacter::AttackCombo);
 	PlayerInputComponent->BindAction("RollAttack", IE_Pressed, this, &APlayerCharacter::RollAttack);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
+	PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &APlayerCharacter::PauseGame);
 }
 
 void APlayerCharacter::MoveForward(float AxisValue)
@@ -297,5 +298,13 @@ void APlayerCharacter::Interact()
 		{
 			MyGameMode->DialogSystem->PlayNextDialog();
 		}
+	}
+}
+
+void APlayerCharacter::PauseGame()
+{
+	if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+	{
+		MyGameMode->ShowPauseMenu();
 	}
 }

@@ -32,6 +32,8 @@ public:
 	UFUNCTION()
 		void ShowGameOver();
 
+	void ShowPauseMenu();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Dialog System")
 		TSubclassOf<UDialogSystem> DialogSystemRef;
@@ -45,8 +47,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Main Menu")
 		TSubclassOf<UUserWidget> MainMenuWidgetRef;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Pause Menu")
+		TSubclassOf<UUserWidget> PauseWidgetRef;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Main Menu")
 		UUserWidget* MainMenuWidget;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Pause Menu")
+		UUserWidget* PauseMenuWidget;
 
 	UPROPERTY(BlueprintReadWrite)
 		UButton* GameOverMenuButton;
@@ -60,6 +68,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UButton* MainMenuQuitButton;
 
+	UPROPERTY(BlueprintReadWrite)
+		UButton* PauseMenuResumeButton;
+
+	UPROPERTY(BlueprintReadWrite)
+		UButton* PauseMenuRestartButton;
+
+	UPROPERTY(BlueprintReadWrite)
+		UButton* PauseMenuMainMenuButton;
+
 	UFUNCTION()
 		void OnMenuButtonClick();
 
@@ -72,9 +89,14 @@ protected:
 	UFUNCTION()
 		void OnQuitButtonClick();
 
+	UFUNCTION()
+		void OnResumeButtonClick();
+
 	void SetupGameOverWidget();
 
 	void SetupMainMenuWidget();
+
+	void SetupPauseMenuWidget();
 
 	void ShowMainMenu();
 };

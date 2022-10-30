@@ -63,6 +63,9 @@ public:
 	UFUNCTION()
 		void StartDialog();
 
+	UFUNCTION()
+		void PauseGame();
+
 protected:
 	/*
 	*
