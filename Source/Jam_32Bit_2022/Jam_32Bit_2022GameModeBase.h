@@ -42,12 +42,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game Over")
 		TSubclassOf<UUserWidget> GameOverWidgetRef;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Main Menu")
+		TSubclassOf<UUserWidget> MainMenuWidgetRef;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Main Menu")
+		UUserWidget* MainMenuWidget;
+
 	UPROPERTY(BlueprintReadWrite)
 		UButton* GameOverMenuButton;
 
 	UPROPERTY(BlueprintReadWrite)
 		UButton* GameOverRetryButton;
 
+	UPROPERTY(BlueprintReadWrite)
+		UButton* MainMenuStartButton;
+
+	UPROPERTY(BlueprintReadWrite)
+		UButton* MainMenuQuitButton;
 
 	UFUNCTION()
 		void OnMenuButtonClick();
@@ -55,5 +66,13 @@ protected:
 	UFUNCTION()
 		void OnRetryButtonClick();
 
+	UFUNCTION()
+		void OnStartButtonClick();
+
+	UFUNCTION()
+		void OnQuitButtonClick();
+
 	void SetupGameOverWidget();
+
+	void SetupMainMenuWidget();
 };

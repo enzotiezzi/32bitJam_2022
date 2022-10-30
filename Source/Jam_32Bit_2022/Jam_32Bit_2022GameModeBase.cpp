@@ -6,9 +6,12 @@
 
 void AJam_32Bit_2022GameModeBase::BeginPlay()
 {
+	SetupMainMenuWidget();
+
 	if (GetWorld()->GetFName() == "MenuLevel")
 	{
-		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Blue, "MenuLevel");
+		if (!MainMenuWidget->IsInViewport())
+			MainMenuWidget->AddToViewport();
 	}
 	else
 	{
@@ -85,5 +88,35 @@ void AJam_32Bit_2022GameModeBase::ShowGameOver()
 		InputMode.SetWidgetToFocus(GameOverWidget->GetWidgetFromName("RetryButton")->TakeWidget());
 
 		PlayerController->SetInputMode(InputMode);
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::SetupMainMenuWidget()
+{
+	if (MainMenuWidgetRef)
+	{
+		MainMenuWidget = CreateWidget<UUserWidget>(GetWorld(), MainMenuWidgetRef);
+
+		if (MainMenuWidget)
+		{
+			MainMenuStartButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("StartButton"));
+			MainMenuQuitButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("QuitButton"));
+
+			MainMenuStartButton->OnClicked.AddDynamic(this, &AJam_32Bit_2022GameModeBase::OnStartButtonClick);
+			MainMenuQuitButton->OnClicked.AddDynamic(this, &AJam_32Bit_2022GameModeBase::OnQuitButtonClick);
+		}
+	}
+}
+
+void AJam_32Bit_2022GameModeBase::OnStartButtonClick()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), "Level_1");
+}
+
+void AJam_32Bit_2022GameModeBase::OnQuitButtonClick()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		UKismetSystemLibrary::QuitGame(GetWorld(), PlayerController, EQuitPreference::Quit, true);
 	}
 }
