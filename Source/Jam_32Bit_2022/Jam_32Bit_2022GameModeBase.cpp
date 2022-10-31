@@ -59,11 +59,15 @@ void AJam_32Bit_2022GameModeBase::OnMenuButtonClick()
 		if (MainMenuWidget->IsInViewport())
 			MainMenuWidget->RemoveFromViewport();
 
-		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
 
-		PlayerController->SetShowMouseCursor(false);
+		PlayerController->SetShowMouseCursor(true);
 
-		PlayerController->SetInputMode(FInputModeGameOnly());
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(MainMenuStartButton->TakeWidget());
+
+		PlayerController->SetInputMode(InputMode);
 	}
 
 	UGameplayStatics::OpenLevel(GetWorld(), "MenuLevel");
