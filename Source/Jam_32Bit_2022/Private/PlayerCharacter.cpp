@@ -225,6 +225,9 @@ void APlayerCharacter::RollAttack()
 
 void APlayerCharacter::BeamAttack()
 {
+	if (RollAttackTimerHandle.IsValid())
+		GetWorld()->GetTimerManager().ClearTimer(RollAttackTimerHandle);
+
 	if (!bIsAttacking)
 	{
 		bool CanAttack = ExecuteAttack(LaserBeamAttack.GetDefaultObject());
