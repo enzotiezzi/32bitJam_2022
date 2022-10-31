@@ -199,13 +199,14 @@ void APlayerCharacter::RollAttack()
 {
 	if (!bIsRolling)
 	{
+		CurrentYawRotation = 0;
+		InitialYawRotation = GetActorRotation().Yaw;
+
 		bool CanAttack = ExecuteAttack(RollingAttack.GetDefaultObject());
 
 		if (CanAttack)
 		{
 			bIsRolling = true;
-
-			InitialYawRotation = GetActorRotation().Yaw;
 
 			GetWorld()->GetTimerManager().SetTimer(RollAttackTimerHandle, this, &APlayerCharacter::RollAttackTick, GetWorld()->GetDeltaSeconds(), true);
 			GetWorld()->GetTimerManager().SetTimer(EnduranceTimerHandle, this, &APlayerCharacter::DecreaseEnduranceTick, .1, true);
@@ -230,13 +231,14 @@ void APlayerCharacter::BeamAttack()
 
 	if (!bIsAttacking)
 	{
+		CurrentYawRotation = 0;
+		InitialYawRotation = GetActorRotation().Yaw;
+
 		bool CanAttack = ExecuteAttack(LaserBeamAttack.GetDefaultObject());
 
 		if (CanAttack)
 		{
 			bIsRolling = true;
-
-			InitialYawRotation = GetActorRotation().Yaw;
 		}
 	}
 	else
@@ -256,6 +258,8 @@ void APlayerCharacter::RollAttackTick()
 void APlayerCharacter::ResetCombat()
 {
 	ComboCounter = 0;
+
+	CurrentYawRotation = 0;
 
 	bIsAttacking = false;
 
