@@ -52,4 +52,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		float Impulse;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		float AttackRadius;
 };

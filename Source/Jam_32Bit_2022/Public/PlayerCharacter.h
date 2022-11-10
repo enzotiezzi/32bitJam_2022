@@ -53,6 +53,11 @@ public:
 
 	void BeamAttack();
 
+	void UseUltimateAttack();
+
+	UFUNCTION(BlueprintCallable)
+		void ExecuteUltimate();
+
 	UFUNCTION(BlueprintCallable)
 		void ResetCombat();
 

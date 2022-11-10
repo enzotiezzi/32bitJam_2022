@@ -10,6 +10,7 @@
 #include <Jam_32Bit_2022/Jam_32Bit_2022GameModeBase.h>
 #include <Kismet/GameplayStatics.h>
 #include <Components/AudioComponent.h>
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -79,6 +80,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("ComboAttack", IE_Pressed, this, &APlayerCharacter::AttackCombo);
 	PlayerInputComponent->BindAction("RollAttack", IE_Pressed, this, &APlayerCharacter::RollAttack);
 	PlayerInputComponent->BindAction("BeamAttack", IE_Pressed, this, &APlayerCharacter::BeamAttack);
+	PlayerInputComponent->BindAction("UltimateAttack", IE_Pressed, this, &APlayerCharacter::UseUltimateAttack);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 	PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &APlayerCharacter::PauseGame);
 }
@@ -111,7 +113,7 @@ void APlayerCharacter::MoveRight(float AxisValue)
 
 		SetActorRotation(CurrentRotation);
 	}
-	else 
+	else
 	{
 		if ((Controller != nullptr) && (AxisValue != 0.0f) && bCanMove)
 		{
@@ -149,7 +151,7 @@ bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 		{
 			if (CurrentEndurance - uCurrentAttack->EnduranceCost >= 0)
 			{
-				if(!uCurrentAttack->bUseEnduranceOverTime)
+				if (!uCurrentAttack->bUseEnduranceOverTime)
 					CurrentEndurance -= uCurrentAttack->EnduranceCost;
 
 				if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
@@ -161,7 +163,7 @@ bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 				CanAttack = false;
 		}
 
-		if (CanAttack) 
+		if (CanAttack)
 		{
 			CurrentAttack = uCurrentAttack;
 
@@ -175,7 +177,7 @@ bool APlayerCharacter::ExecuteAttack(UAttack* uCurrentAttack)
 
 			PlayAnimMontage(CurrentAttack->AttackAnimMontage);
 
-			if(uCurrentAttack->AttackSound)
+			if (uCurrentAttack->AttackSound)
 				AttackAudioComponent = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), uCurrentAttack->AttackSound, GetActorLocation());
 		}
 
@@ -212,9 +214,9 @@ void APlayerCharacter::RollAttack()
 			GetWorld()->GetTimerManager().SetTimer(EnduranceTimerHandle, this, &APlayerCharacter::DecreaseEnduranceTick, .1, true);
 		}
 	}
-	else 
+	else
 	{
-		if(RollAttackTimerHandle.IsValid())
+		if (RollAttackTimerHandle.IsValid())
 			GetWorld()->GetTimerManager().ClearTimer(RollAttackTimerHandle);
 
 		if (EnduranceTimerHandle.IsValid())
@@ -223,6 +225,62 @@ void APlayerCharacter::RollAttack()
 		ResetCombat();
 	}
 }
+
+
+
+void APlayerCharacter::ExecuteUltimate()
+{
+	TArray<FHitResult> OutHits;
+
+	// start and end locations
+	FVector SweepStart = GetActorLocation();
+	FVector SweepEnd = GetActorLocation();
+
+	// create a collision sphere
+	FCollisionShape MyColSphere = FCollisionShape::MakeSphere(CurrentAttack->AttackRadius);
+
+
+	bool isHit = GetWorld()->SweepMultiByChannel(OutHits, SweepStart, SweepEnd, FQuat::Identity, ECC_WorldStatic, MyColSphere);
+
+	if (isHit)
+	{
+		// loop through TArray
+		for (auto& Hit : OutHits)
+		{
+			if (ABuilding* Building = Cast<ABuilding>(Hit.GetActor()))
+			{
+
+
+				if (CurrentAttack)
+				{
+
+					if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+					{
+						MyGameMode->DestructionSystem->UpdateEnduranceBar(CurrentEndurance / MaxEndurance);
+					}
+
+					Building->ReceiveDamange(CurrentAttack->Damage);
+				}
+			}
+			
+		}
+	}
+
+
+
+}
+
+
+void APlayerCharacter::UseUltimateAttack()
+{
+	bool CanAttack = ExecuteAttack(UltimateAttack.GetDefaultObject());
+
+	if (CanAttack)
+	{
+		bCanMove = false;
+	}
+}
+
 
 void APlayerCharacter::BeamAttack()
 {
@@ -271,7 +329,7 @@ void APlayerCharacter::ResetCombat()
 
 	bIsRootMotionAnimation = false;
 
-	if(CurrentAttack)
+	if (CurrentAttack)
 		StopAnimMontage(CurrentAttack->AttackAnimMontage);
 
 	CurrentAttack = nullptr;
@@ -307,7 +365,7 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 		TailCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		if (CurrentAttack) 
+		if (CurrentAttack)
 		{
 			if (CurrentAttack->bRecoverEndurance)
 			{
@@ -317,7 +375,7 @@ void APlayerCharacter::OnHitComponentBeginOverlap(UPrimitiveComponent* Overlappe
 
 				if (AJam_32Bit_2022GameModeBase* MyGameMode = Cast<AJam_32Bit_2022GameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 				{
-					MyGameMode->DestructionSystem->UpdateEnduranceBar(CurrentEndurance/MaxEndurance);
+					MyGameMode->DestructionSystem->UpdateEnduranceBar(CurrentEndurance / MaxEndurance);
 				}
 			}
 			Building->ReceiveDamange(CurrentAttack->Damage);
@@ -356,7 +414,7 @@ void APlayerCharacter::PauseGame()
 	}
 }
 
-void APlayerCharacter::EnableBeam() 
+void APlayerCharacter::EnableBeam()
 {
 	GetWorld()->GetTimerManager().SetTimer(EnduranceTimerHandle, this, &APlayerCharacter::DecreaseEnduranceTick, .1, true);
 
